@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2017-02-12 Sun 10:10 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title></title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Small changes by [[http:/cv.adam.kurkiewicz.pl][Adam Kurkiewicz]]Adam Kurkiewicz. Based on work of, but not endorsed by, [[http://www.andrew.cmu.edu/user/avigad][Jeremy Avigad]]Jeremy Avigad, [[http://leodemoura.github.io][Leonardo de Moura]]Leonardo de Moura, [[http://www.cs.cmu.edu/~soonhok][Soonho Kong]]Soonho Kong." />
+<link rel="stylesheet" href="css/tutorial.css"/>
+<link rel="stylesheet" href="css/code.css"/>
+<script type="text/javascript" charset="utf-8">if(!window.PolymerGestures) { var head = document.getElementsByTagName('head')[0]; var js = document.createElement("script"); js.type = "text/javascript"; js.src = "//cdn.jsdelivr.net/webcomponentsjs/0.7.20/webcomponents.min.js"; head.appendChild(js); } </script>
+<link rel='import' href='juicy-ace-editor.html'/>
+</head>
+<body>
+<div id="content">
+
+<div id="outline-container-org971086c" class="outline-2">
+<h2 id="org971086c"><span class="section-number-2"> 1</span> Let's do some maths</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+A correct mathematical proof of X is a rock solid evidence that X is true. But can you trust the correctness of the proof?!
+</p>
+
+<p>
+A recent programming language from Microsoft Research called <a target='_blank' href="http://leanprover.github.io/">Lean</a> allows you to break down the proof into small pieces &#x2013; all the way down into the most basic truths &#x2013; and test each piece rigorously by putting it through its trusted kernel.
+</p>
+
+<p>
+One way to prove a theorem is by explicitly constructing what is known as a "proof term". You can read more about these in the official <a target='_blank' href="https://leanprover.github.io/introduction_to_lean/">lean tutorial</a>.
+</p>
+
+<p>
+Let's prove that 2 + 2 = 2 * 2. 
+</p>
+
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-1' mode="ace/mode/lean" readonly="true">-- Method 1, contructing the proof term directly.
+lemma add2_term (a : nat) : a + a = 2 * a :=
+    have S1 : (a + a) = 1 * (a + a), from eq.symm (one_mul (a + a)),
+    have S2 : 1 * (a + a) = (1 * a + 1 * a), from mul_add 1 a a,
+    have S3 : 1 * a + 1 * a = (1 + 1) * a, from eq.symm (add_mul 1 1 a),
+    have S4 : (1 + 1) * a = 2 * a, from eq.refl _,
+    eq.trans (eq.trans (eq.trans S1 S2) S3) S4
+
+example : 2 + 2 = 2 * 2 := add2_term 2</juicy-ace-editor><div id='lean-full-code-1' style='display:none'>-- Method 1, contructing the proof term directly.
+lemma add2_term (a : nat) : a + a = 2 * a :=
+    have S1 : (a + a) = 1 * (a + a), from eq.symm (one_mul (a + a)),
+    have S2 : 1 * (a + a) = (1 * a + 1 * a), from mul_add 1 a a,
+    have S3 : 1 * a + 1 * a = (1 + 1) * a, from eq.symm (add_mul 1 1 a),
+    have S4 : (1 + 1) * a = 2 * a, from eq.refl _,
+    eq.trans (eq.trans (eq.trans S1 S2) S3) S4
+
+example : 2 + 2 = 2 * 2 := add2_term 2
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-1').text());">Try it yourself &raquo;</button></div>
+</div>
+
+<p>
+BTW, lean compiles to asm.js, so you can run the proof above directly in your browser! If you see the word "Done" in the right bottom pane, then your proof compiles, and it is correct.
+</p>
+
+<p>
+Constructing the proof term explictly can be a little verbose and repetitive. Lean offers handy sugar &#x2013; the calc environment!
+</p>
+
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-2' mode="ace/mode/lean" readonly="true">-- Method 2, constructing the proof term through calc environment.
+lemma add2_calc (a : nat) : a + a = 2 * a := 
+    calc (a + a) = 1 * (a + a) : eq.symm (one_mul (a + a))
+             ... = (1 * a + 1 * a) : mul_add 1 a a
+             ... = (1 + 1) * a : eq.symm (add_mul 1 1 a)
+             ... = 2 * a : eq.refl _
+
+example : 2 + 2 = 2 * 2 := add2_calc 2</juicy-ace-editor><div id='lean-full-code-2' style='display:none'>-- Method 2, constructing the proof term through calc environment.
+lemma add2_calc (a : nat) : a + a = 2 * a := 
+    calc (a + a) = 1 * (a + a) : eq.symm (one_mul (a + a))
+             ... = (1 * a + 1 * a) : mul_add 1 a a
+             ... = (1 + 1) * a : eq.symm (add_mul 1 1 a)
+             ... = 2 * a : eq.refl _
+
+example : 2 + 2 = 2 * 2 := add2_calc 2
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-2').text());">Try it yourself &raquo;</button></div>
+</div>
+
+<p>
+If you're a bit lazy, and can't be asked to figure out all necessary transformations in painful detail, you can use the rewrite tactic:
+</p>
+
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-3' mode="ace/mode/lean" readonly="true">-- Method 3, constructing the proof term using tactics.
+lemma add2_tact (a : nat) : a + a = 2 * a :=
+    calc (a + a) = 1 * (a + a) : by rw one_mul (a + a)
+             ... = (1 * a + 1 * a) : by rw mul_add
+             ... = (1 + 1) * a : by rw add_mul
+             ... = 2 * a : rfl
+
+example : 2 + 2 = 2 * 2 := add2_tact 2</juicy-ace-editor><div id='lean-full-code-3' style='display:none'>-- Method 3, constructing the proof term using tactics.
+lemma add2_tact (a : nat) : a + a = 2 * a :=
+    calc (a + a) = 1 * (a + a) : by rw one_mul (a + a)
+             ... = (1 * a + 1 * a) : by rw mul_add
+             ... = (1 + 1) * a : by rw add_mul
+             ... = 2 * a : rfl
+
+example : 2 + 2 = 2 * 2 := add2_tact 2
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-3').text());">Try it yourself &raquo;</button></div>
+</div>
+
+<p>
+Which can be written more compactly:
+</p>
+
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-4' mode="ace/mode/lean" readonly="true">-- Method 4, tactics again, but a bit more compact.
+lemma add2_tact2 (a : nat) : a + a = 2 * a :=
+    calc (a + a) = 1 * (a + a) : by rw one_mul (a + a)
+             ... = (1 + 1) * a : by rw [mul_add, add_mul]
+
+example : 2 + 2 = 2 * 2 := add2_tact2 2</juicy-ace-editor><div id='lean-full-code-4' style='display:none'>-- Method 4, tactics again, but a bit more compact.
+lemma add2_tact2 (a : nat) : a + a = 2 * a :=
+    calc (a + a) = 1 * (a + a) : by rw one_mul (a + a)
+             ... = (1 + 1) * a : by rw [mul_add, add_mul]
+
+example : 2 + 2 = 2 * 2 := add2_tact2 2
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-4').text());">Try it yourself &raquo;</button></div>
+</div>
+
+<p>
+Another approach, and even shorter, would be to use the simplifier tactic:
+</p>
+
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-5' mode="ace/mode/lean" readonly="true">-- Method 5, slightly shorter, using simplifier.
+lemma add2_simp (a : nat) : a + a = 2 * a :=
+    calc (a + a) = 1 * (a + a) : by rw one_mul (a + a)
+             ... = (1 + 1) * a : by simp [mul_add]
+
+example : 2 + 2 = 2 * 2 := add2_simp 2</juicy-ace-editor><div id='lean-full-code-5' style='display:none'>-- Method 5, slightly shorter, using simplifier.
+lemma add2_simp (a : nat) : a + a = 2 * a :=
+    calc (a + a) = 1 * (a + a) : by rw one_mul (a + a)
+             ... = (1 + 1) * a : by simp [mul_add]
+
+example : 2 + 2 = 2 * 2 := add2_simp 2
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-5').text());">Try it yourself &raquo;</button></div>
+</div>
+
+<p>
+You can also get away without a lemma altogether. Lean's type checker is clever enough to work things out from one <a target='_blank' href="https://en.wikipedia.org/wiki/Reflexive_relation">simple hint</a>
+</p>
+
+<div class="org-src-container">
+<juicy-ace-editor id='lean-juicy-ace-editor-6' mode="ace/mode/lean" readonly="true">-- Method 6, letting the type system figure it out...
+example : 2 + 2 = 2 * 2 := rfl</juicy-ace-editor><div id='lean-full-code-6' style='display:none'>-- Method 6, letting the type system figure it out...
+example : 2 + 2 = 2 * 2 := rfl
+</div><div class='no-print' align="left"><button type="button" onclick="invoke_leanjs($('#lean-full-code-6').text());">Try it yourself &raquo;</button></div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge066ad7" class="outline-2">
+<h2 id="orge066ad7"><span class="section-number-2"> 1</span> Want more?</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+If you're interested in mathematical proofs, and how to write them in Lean Prof. Jeremy Avigad has an excellent course in mathematical logic: <a target='_blank' href="https://avigad.github.io/logic_and_proof/">Logic and proof</a>.
+</p>
+
+<p>
+If you know some maths already, and you want to just dive in into formal proof checking, you can check out <a target='_blank' href="https://leanprover.github.io/introduction_to_lean/">the lean tutorial</a>.
+</p>
+</div>
+</div>
+</div>
+</body>
+</html>
